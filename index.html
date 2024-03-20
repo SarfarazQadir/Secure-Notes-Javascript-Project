@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Secure Notes</title>
+ 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    
+    <div class="container mt-5">
+        <h1 class="mb-4 center">Secure Notes</h1>
+        <div class="form-group">
+            <input type="text" id="noteInput" class="form-control" placeholder="Enter your note...">
+        </div>
+        <button id="saveNote" class="btn btn-primary">Save Note</button>
+        <div id="notesList" class="mt-4"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+
+        const existingNotes = JSON.parse(localStorage.getItem('secureNotes')) || [];
+
+       
+        function displayNotes() {
+            const notesList = document.getElementById('notesList');
+            notesList.innerHTML = '';
+            existingNotes.forEach((note, index) => {
+                const noteItem = document.createElement('div');
+                noteItem.className = 'alert alert-info mt-2';
+                noteItem.innerHTML = `
+                    ${note}
+                    <button class="btn btn-danger btn-sm float-right delete-note" data-index="${index}">Delete</button>
+                `;
+                notesList.appendChild(noteItem);
+            });
+        }
+
+       
+        document.getElementById('saveNote').addEventListener('click', () => {
+            const noteInput = document.getElementById('noteInput');
+            const newNote = noteInput.value.trim();
+            if (newNote) {
+                existingNotes.push(newNote);
+                localStorage.setItem('secureNotes', JSON.stringify(existingNotes));
+                noteInput.value = '';
+                displayNotes();
+            }
+        });
+
+      
+        document.addEventListener('click', (event) => {
+            if (event.target.classList.contains('delete-note')) {
+                const index = event.target.getAttribute('data-index');
+                existingNotes.splice(index, 1);
+                localStorage.setItem('secureNotes', JSON.stringify(existingNotes));
+                displayNotes();
+            }
+        });
+
+        displayNotes();
+    </script>
+</body>
+</html>
